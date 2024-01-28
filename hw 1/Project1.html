@@ -18,41 +18,20 @@
         //declare canvas globally
         var canvas;
 
-        //create empty obj for prototype
-        var RectanglePrototype ={};
-
-        //adding the shared update and draw functions to the prototype
-        RectanglePrototype.update = function(){
-            this.velocity.y +=1;
-            this.y+=this.velocity.y * 0.16;
-        }
-        RectanglePrototype.draw = function(){
-            const ctx = canvas.getContext("2d");
-            ctx.fillStyle = this.color;
-            ctx.fillRect(this.x,this.y,50,45);
-        }
-
         function Rectangle(x,y,color){
             this.x = x;
             this.y = y;
             this.color = color;
-            this.velocity = {x:0, y:0};
 
-            // this.draw = function(){
-            //     const ctx = canvas.getContext("2d");
 
-            //     ctx.fillStyle = this.color;
-            //     ctx.fillRect(this.x,this.y,50,45);
-            // }
+            this.draw = function(){
+                const ctx = canvas.getContext("2d");
 
-            // this.update = function(){
-            //     this.velocity.y +=1;
-            //     this.y+=this.velocity.y * 0.16;
-            // }
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x,this.y,50,45);
+
+            }
         }
-
-        //set the rectangle obj to inherit the prototype
-        Rectangle.prototype = RectanglePrototype;
 
         function init() {
             console.log("Hello world");
@@ -88,7 +67,6 @@
 
             // Iterate through sceneList and call the draw method
             for (var i = 0; i < sceneList.length; i++) {
-                sceneList[i].update();
                 sceneList[i].draw();
             }
 
