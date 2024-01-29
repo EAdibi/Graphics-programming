@@ -12,16 +12,16 @@
         // current frame
         var currentFrameNumber =0;
 
-        // create a global array variable
+        // global array variable
         var sceneList = [];
     
-        //declare canvas globally
+    
         var canvas;
 
-        //create empty obj for prototype
+        //empty obj for prototype
         var RectanglePrototype ={};
 
-        //adding the shared update and draw functions to the prototype
+        //shared update and draw functions to the prototype
         RectanglePrototype.update = function(){
             this.velocity.y +=1;
             this.y+=this.velocity.y * 0.16;
@@ -58,18 +58,15 @@
             console.log("Hello world");
             canvas = document.getElementById("myCanvas");
 
-            //create and add Rectangle obj to the list array
+            //add Rectangle obj to the list array
             sceneList.push(new Rectangle(20,20,"rgb(0,255,0)"));
             sceneList.push(new Rectangle(80,20,"rgb(0,255,0)"));
             sceneList.push(new Rectangle(140,20,"rgb(0,255,0)"));
 
             // var newRectangleInstance = new Rectangle(20, 20, "rgb(0, 255, 0)"); 
-            
-
-            //calling updateAndDraw function to draw
+        
             updateAndDraw();
         }
-
 
 
         function updateAndDraw() {
@@ -82,14 +79,17 @@
             const randomColor = getRandomColor();
             sceneList.push(new Rectangle(randomx, randomy, randomColor));
 
-
-            // Clear the canvas before drawing
+            // Clear before drawing
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Iterate through sceneList and call the draw method
+            // Iterate through sceneList 
             for (var i = 0; i < sceneList.length; i++) {
                 sceneList[i].update();
                 sceneList[i].draw();
+                if(isRectangleOutOfCanvas(sceneList[i])){
+                    sceneList.splice(i,1); // remove the rectangle
+                    i--; // it will adjust the index after removing an element from array
+                }
             }
 
             currentFrameNumber++;
@@ -111,10 +111,17 @@
 
         function getRandomColor() {
             var red = Math.floor(Math.random() * 256);   // Random between 0-255
-            var green = Math.floor(Math.random() * 256); // Random between 0-255
-            var blue = Math.floor(Math.random() * 256);  // Random between 0-255
-            return 'rgb(' + red + ', ' + green + ', ' + blue + ')';
-}
+            var green = Math.floor(Math.random() * 256); 
+            var blue = Math.floor(Math.random() * 256);  
+            return 'rgb(' + red + ', ' + green + ', ' + blue + ')';     
+        }
+
+        function isRectangleOutOfCanvas(rectangle){
+            return rectangle.y > canvas.height || 
+            rectangle.x > canvas.width || 
+            rectangle.y + 45 < 0 || 
+            rectangle.x + 50 < 0;
+        }
 
     </script>
 </head>
