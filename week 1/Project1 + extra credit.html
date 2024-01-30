@@ -6,35 +6,31 @@
     <meta charset="UTF-8">  
     <title>Page Title</title>
 
-
     <script>
-
-        // current frame
         var currentFrameNumber =0;
-
-        // global array variable
         var sceneList = [];
-    
-    
         var canvas;
-
-        //empty obj for prototype
         var RectanglePrototype ={};
 
-        //shared update and draw functions to the prototype
+        
         RectanglePrototype.update = function(){
-            this.velocity.y +=1;
+            this.velocity.y += 0.5;
             this.y+=this.velocity.y * 0.16;
+
+            this.width = Math.max(5, this.width - 0.01);
+            this.height = Math.max(5, this.height - 0.001);
         }
         RectanglePrototype.draw = function(){
             const ctx = canvas.getContext("2d");
             ctx.fillStyle = this.color;
-            ctx.fillRect(this.x,this.y,50,45);
+            ctx.fillRect(this.x,this.y,this.width,this.height);
         }
 
-        function Rectangle(x, y, color){
+        function Rectangle(x, y, width, height, color){
             this.x = x;
             this.y = y;
+            this.width = 10;
+            this.height = 10;
             this.color = color;
             this.velocity = {x:0, y:0};
 
@@ -59,13 +55,15 @@
             canvas = document.getElementById("myCanvas");
 
             //add Rectangle obj to the list array
-            sceneList.push(new Rectangle(20,20,"rgb(0,255,0)"));
-            sceneList.push(new Rectangle(80,20,"rgb(0,255,0)"));
-            sceneList.push(new Rectangle(140,20,"rgb(0,255,0)"));
+            sceneList.push(new Rectangle(20,20,50,45,"rgb(0,255,0)"));
+            sceneList.push(new Rectangle(80,20,50,45,"rgb(0,255,0)"));
+            sceneList.push(new Rectangle(140,20,50,45,"rgb(0,255,0)"));
 
             // var newRectangleInstance = new Rectangle(20, 20, "rgb(0, 255, 0)"); 
         
             updateAndDraw();
+            
+            changeColor();
         }
 
 
@@ -76,10 +74,9 @@
             //create a rectangle with a random position and color
             const randomx = Math.floor(Math.random() *(canvas.width));
             const randomy = Math.floor(Math.random() *(canvas.height));
-            const randomColor = getRandomColor();
-            sceneList.push(new Rectangle(randomx, randomy, randomColor));
-
-            // Clear before drawing
+            // const randomColor = getRandomColor();
+            const fixColor = "rgb(255, 182, 193)";
+            sceneList.push(new Rectangle(randomx, randomy, 50, 45,fixColor));
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Iterate through sceneList 
@@ -103,10 +100,8 @@
         function updateStats(){
             var p = document.getElementById("frameCount");
             p.innerText = "Frame Count: " + currentFrameNumber;
-      
             var p = document.getElementById("rectangleCount");
             p.innerText = "Rectangles Count: " + sceneList.length;
-            
         }
 
         function getRandomColor() {
@@ -117,10 +112,23 @@
         }
 
         function isRectangleOutOfCanvas(rectangle){
-            return rectangle.y > canvas.height || 
-            rectangle.x > canvas.width || 
-            rectangle.y + 45 < 0 || 
-            rectangle.x + 50 < 0;
+            return rectangle.y - rectangle.height > canvas.height || 
+            rectangle.x - rectangle.width > canvas.width || 
+            rectangle.y < -rectangle.height || 
+            rectangle.x < -rectangle.width;
+        }
+
+
+        function ChangeSpawnColor(){
+            var newColor = getRandomColor()
+            for(var i =0; i< sceneList.length; i++){
+                sceneList[i].color = newColor ;
+            }
+        }
+
+        function changeColor(){
+            var button = document.getElementById("changeColorButton");
+            button.addEventListener("click", ChangeSpawnColor);
         }
 
     </script>
@@ -133,7 +141,7 @@
 
     <canvas id="myCanvas" width="300" height="200" style="border: 1px solid gray;"></canvas>
     <br>
-    <button>
+    <button id="changeColorButton">
         Change Spawn Color
     </button>
 
