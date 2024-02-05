@@ -136,14 +136,39 @@ Vector3.prototype = {
   fromTo: function(fromPoint, toPoint) {
     if (!(fromPoint instanceof Vector3) || !(toPoint instanceof Vector3)) {
       console.error("fromTo requires to vectors: 'from' and 'to'");
+      return null;
     }
     // todo - return the vector that goes from "fromPoint" to "toPoint"
     //        NOTE - "fromPoint" and "toPoint" should not be altered
+
+    var res = new Vector3 (
+      toPoint.x - fromPoint.x,
+      toPoint.y - fromPoint.y,
+      toPoint.z - fromPoint.z 
+    );
+    return res;
   },
 
   //----------------------------------------------------------------------------- 
   rescale: function(newScale) {
     // todo - Change this vector's length to be newScale
+    var currentLength = this.length();
+
+    if(currentLength === 0){
+      console.error("Can not rescale! size is zero.")
+      return null;
+    }
+
+    //normalizing the vector
+    this.x /= currentLength;
+    this.y /= currentLength;
+    this.z /= currentLength;
+
+    //rescaling the normalized vector to desired length
+    this.x *= newScale;
+    this.y *= newScale;
+    this.z *= newScale;
+
     return this;
   },
 
@@ -151,6 +176,21 @@ Vector3.prototype = {
   angle: function(v1, v2) {
     // todo - calculate the angle in degrees between vectors v1 and v2. Do NOT
     //        change any values on the vectors themselves
+    var dotProduct = v1.dot(v2);
+
+    var magnitudeV1 = v1.length();
+    var magnitudeV2 = v2.length();
+
+    if(magnitudeV1 === 0 || magnitudeV2 === 0){
+      console.error("Can not calculate angle, one or both vectors have zero length");
+      return null;
+    }
+
+    var cosTheta = dotProduct / (magnitudeV1 * magnitudeV2);
+    var radians = Math.acos(cosTheta);
+    var degree = radians * (180 / Math.PI);
+    return degree;
+
     return 0;
   },
 
@@ -161,6 +201,27 @@ Vector3.prototype = {
     //        NOTE - "vectorToProject" and "otherVector" should NOT be altered (i.e. use clone)
     //        See "Vector Projection Slides" under "Extras" for more info.
 
+    if (!(vectorToProject instanceof Vector3) || !(otherVector instanceof Vector3)) {
+      console.error("project needs two Vector3 objects.");
+      return null; 
+    }
+  
+    var dotProduct = vectorToProject.dot(otherVector);
+    var otherVectorLengthSqr = otherVector.lengthSqr();
+  
+    if (otherVectorLengthSqr === 0) {
+      console.error("'otherVector' has zero length, cannot project onto it");
+      return null; 
+    }
+   
+    var scaleFactor = dotProduct / otherVectorLengthSqr;
+    var projection = new Vector3(
+      otherVector.x * scaleFactor,
+      otherVector.y * scaleFactor,
+      otherVector.z * scaleFactor
+    );
+
+    return projection;
   }
 };
 
