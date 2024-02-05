@@ -1,1 +1,0 @@
-console.log("Yaay, this is your first Java Script code!!")

@@ -41,6 +41,9 @@ Vector3.prototype = {
   //----------------------------------------------------------------------------- 
   copy: function(other) {
     // copy the values from other into 'this'
+    this.x = other.x;
+    this.y = other.y;
+    this.z = other.z;
     return this;
   },
 
@@ -48,6 +51,9 @@ Vector3.prototype = {
   negate: function() {
     // multiply 'this' vector by -1
     // This SHOULD change the values of this.x, this.y, and this.z
+    this.x = -this.x;
+    this.y = -this.y;
+    this.z = -this.z;
     return this;
   },
 
@@ -55,6 +61,9 @@ Vector3.prototype = {
   add: function(v) {
     // todo - add v to 'this' vector
     // This SHOULD change the values of this.x, this.y, and this.z
+    this.x += v.x;
+    this.y += v.y;
+    this.z += v.z;
     return this;
   },
 
@@ -62,6 +71,9 @@ Vector3.prototype = {
   subtract: function(v) {
     // todo - subtract v from 'this' vector
     // This SHOULD change the values of this.x, this.y, and this.z
+    this.x -= v.x;
+    this.y -= v.y;
+    this.z -= v.z;
     return this;
   },
 
@@ -69,6 +81,9 @@ Vector3.prototype = {
   multiplyScalar: function(scalar) {
     // multiply 'this' vector by "scalar"
     // This SHOULD change the values of this.x, this.y, and this.z
+    this.x *= scalar;
+    this.y *=scalar;
+    this.z *= scalar;
     return this;
   },
 
@@ -76,7 +91,8 @@ Vector3.prototype = {
   length: function() {
     // todo - return the magnitude (A.K.A. length) of 'this' vector
     // This should NOT change the values of this.x, this.y, and this.z
-    return 0;
+
+    return Math.sqrt(this.x*this.x + this.y *this.y + this.z *this.z);
   },
 
   //----------------------------------------------------------------------------- 
@@ -87,13 +103,21 @@ Vector3.prototype = {
     // There are many occasions where knowing the exact length is unnecessary 
     // and the square can be substituted instead (for performance reasons).  
     // This function should NOT have to take the square root of anything.
-    return 0;
+    return this.x*this.x + this.y *this.y + this.z *this.z;
   },
 
   //----------------------------------------------------------------------------- 
   normalize: function() {
     // todo - Change the components of this vector so that its magnitude will equal 1.
     // This SHOULD change the values of this.x, this.y, and this.z
+
+    var length = this.length();
+    if(length !==0){
+      this.x /= length;
+      this.y /= length;
+      this.z /= length;
+    }
+    
     return this;
   },
 
@@ -101,7 +125,7 @@ Vector3.prototype = {
   dot: function(other) {
     // todo - return the dot product betweent this vector and "other"
     // This should NOT change the values of this.x, this.y, and this.z
-    return 0;
+    return this.x *other.x + this.y * other.y + this.z *other.z;
   },
 
 
