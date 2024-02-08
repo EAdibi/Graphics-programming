@@ -95,4 +95,4 @@ function sphereEqual(sphere, x, y, z, radius) {
            floatEqual(sphere.radius, radius);
 }
 
- 
+// EOF 00100001-10
