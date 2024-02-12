@@ -1,6 +1,3 @@
-
-//test
-
 /*
  * An object type representing an implicit sphere.
  *
@@ -17,77 +14,93 @@
  * }
  */
 
+
 var Sphere = function(center, radius) {
-  // Sanity checks (your modification should be below this where indicated)
+
   if (!(this instanceof Sphere)) {
     console.error("Sphere constructor must be called with the new operator");
+  }
+
+  
+  if (!(center instanceof Vector3)) {
+    console.error("Invalid center parameter, defaulting to zero vector");
+    center = new Vector3(); 
+  }
+
+  if (typeof radius !== 'number') {
+    console.error("Invalid radius parameter, defaulting to 1");
+    radius = 1; 
   }
 
   this.center = center;
   this.radius = radius;
 
-  // todo - make sure this.center and this.radius are replaced with default values if and only if they
-  // are invalid or undefined (i.e. center should be of type Vector3 & radius should be a Number)
-  // - the default center should be the zero vector
-  // - the default radius should be 1
-  // YOUR CODE HERE
 
-  // Sanity checks (your modification should be above this)
   if (!(this.center instanceof Vector3)) {
     console.error("The sphere center must be a Vector3");
   }
 
-  if ((typeof(this.radius) != 'number')) {
+  if (typeof this.radius !== 'number') {
     console.error("The radius must be a Number");
   }
 };
 
+
+
+
+
 Sphere.prototype = {
+  raycast: function(ray) {
   
-  //----------------------------------------------------------------------------- 
-  raycast: function(r1) {
-    // todo - determine whether the ray intersects has a VALID intersection with this
-	//        sphere and if so, where. A valid intersection is on the is in front of
-	//        the ray and whose origin is NOT inside the sphere
+    var rayToSphere = this.center.subtract(ray.origin);
 
-    // Recommended steps
-    // ------------------
-    // 0. (optional) watch the video showing the complete implementation of plane.js
-    //    You may find it useful to see a different piece of geometry coded.
+    var tca = rayToSphere.dot(ray.direction);
 
-    // 1. review slides/book math
+    if (tca < 0) {
+      return { hit: false, point: null, normal: null, distance: null };
+    }
+
+
+    var d2 = rayToSphere.dot(rayToSphere) - tca * tca;
+    var radiusSquared = this.radius * this.radius;
+
+  
+    if (d2 > radiusSquared) {
+      return { hit: false, point: null, normal: null, distance: null };
+    }
     
-    // 2. identity the vectors needed to solve for the coefficients in the quadratic equation
+    var thc = Math.sqrt(radiusSquared - d2);
+    var t0 = tca - thc;
+    var t1 = tca + thc;
 
-    // 3. calculate the discriminant
+    var intersectionDistance = Math.min(t0, t1);
+    var intersectionPoint = ray.origin.add(ray.direction.multiplyScalar(intersectionDistance));
+
+ 
+    if (intersectionDistance < 0) {
+      return { hit: false, point: null, normal: null, distance: null };
+    }
+
     
-    // 4. use the discriminant to determine if further computation is necessary 
-    //    if (discriminant...) { ... } else { ... }
+    var normal = intersectionPoint.clone().subtract(this.center).normalize();
 
-    // 5. return the following object literal "result" based on whether the intersection
-    //    is valid (i.e. the intersection is in front of the ray AND the ray is not inside
-    //    the sphere)
-    //    case 1: no VALID intersections
-    //      var result = { hit: false, point: null }
-    //    case 2: 1 or more intersections
-    //      var result = {
-    //        hit: true,
-    //        point: 'a Vector3 containing the CLOSEST VALID intersection',
-    //        normal: 'a vector3 containing a unit length normal at the intersection point',
-    //        distance: 'a scalar containing the intersection distance from the ray origin'
-    //      }
 
-    // An object created from a literal that we will return as our result
-    // Replace the null values in the properties below with the right values
-    var result = {
-      hit: null,      // should be of type Boolean
-      point: null,    // should be of type Vector3
-      normal: null,   // should be of type Vector3
-      distance: null, // should be of type Number (scalar)
+    // var normal = intersectionPoint.subtract(this.center);
+
+    // if the intersection point is outside the sphere
+    // if (intersectionDistance > 0) {
+    //   normal.normalize(); // Point outward
+    // } else {
+    //   normal.normalize().negate(); // Point inward
+    // }
+
+
+    
+    return {
+      hit: true,
+      point: intersectionPoint,
+      normal: normal,
+      distance: intersectionDistance
     };
-
-    return result;
   }
-}
-
-// EOF 00100001-10
+};
