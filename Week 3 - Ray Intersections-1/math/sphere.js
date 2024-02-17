@@ -47,8 +47,6 @@ var Sphere = function(center, radius) {
 
 
 
-
-
 Sphere.prototype = {
   raycast: function(ray) {
   
