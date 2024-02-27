@@ -98,8 +98,8 @@ function setPixelColor(xPixelIndex, yPixelIndex, color) {
 // -----------------------------------------------------------------------------
 var sphere = new Sphere(new Vector3(0,0,0), 0.25);
 var floor = new Plane(new Vector3(0,1,0), new Vector3(0,-0.25,0));
-var leftWall = new Plane(new Vector3(1,0,0), new Vector3(-1,0,0), {color: 'red' });
-var rightWall = new Plane(new Vector3(-1,0,0), new Vector3(1,0,0), {color: 'green'});
+var leftWall = new Plane(new Vector3(1,0,0), new Vector3(-1,0,0), {r: 1, g: 0, b: 0});
+var rightWall = new Plane(new Vector3(-1,0,0), new Vector3(1,0,0), {r: 0, g: 1, b: 0});
 var ceiling = new Plane(new Vector3(0,-1,0), new Vector3(0,1,0));
 var backWall = new Plane(new Vector3(0,0,1), new Vector3(0,0,-1));
 var scene = [sphere, ceiling, floor, leftWall, rightWall, backWall];
@@ -128,7 +128,7 @@ function updateAndRender(timeElapsed) {
             if (closestHit) {
 
                 if (closestHit.object instanceof Sphere) {
-                    objectColor = {r:0.5,g:0,b:0.5};
+                    objectColor = {r:1,g:0.75,b:0.8};
                 } else {
                     objectColor = closestHit.object.color || { r: 1, g: 1, b: 1 };
                 }
