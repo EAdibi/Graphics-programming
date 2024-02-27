@@ -87,50 +87,96 @@ function generateRayForPixel(xPixelIndex, yPixelIndex) {
 }
 
 // -----------------------------------------------------------------------------
-function setPixelColor(xPixelIndex, yPixelIndex, shadeOfGray /*[0,1]*/) {
-    var index = (yPixelIndex * pixelsAcross + xPixelIndex) * 4; // 4 bytes per pixel
-    imageData.data[index + 0] = shadeOfGray * 255; // red channel
-    imageData.data[index + 1] = shadeOfGray * 255; // green channel
-    imageData.data[index + 2] = shadeOfGray * 255; // blue channel
-    imageData.data[index + 3] = 255;
+function setPixelColor(xPixelIndex, yPixelIndex, color) { 
+    var index = (yPixelIndex * pixelsAcross + xPixelIndex) * 4; 
+    imageData.data[index + 0] = color.r * 255; 
+    imageData.data[index + 1] = color.g * 255; 
+    imageData.data[index + 2] = color.b * 255; 
+    imageData.data[index + 3] = 255; 
 }
 
 // -----------------------------------------------------------------------------
+var sphere = new Sphere(new Vector3(0,0,0), 0.25);
+var floor = new Plane(new Vector3(0,1,0), new Vector3(0,-0.25,0));
+var leftWall = new Plane(new Vector3(1,0,0), new Vector3(-1,0,0), {color: 'red' });
+var rightWall = new Plane(new Vector3(-1,0,0), new Vector3(1,0,0), {color: 'green'});
+var ceiling = new Plane(new Vector3(0,-1,0), new Vector3(0,1,0));
+var backWall = new Plane(new Vector3(0,0,1), new Vector3(0,0,-1));
+var scene = [sphere, ceiling, floor, leftWall, rightWall, backWall];
 function updateAndRender(timeElapsed) {
-    var lightPosition = new Vector3(1, 0, 0); 
+
     for (var yPixelIndex = 0; yPixelIndex < pixelsDown; ++yPixelIndex) {
+
         for (var xPixelIndex = 0; xPixelIndex < pixelsAcross; ++xPixelIndex) {
             var pixelRay = generateRayForPixel(xPixelIndex, yPixelIndex);
             var sphereResult = sphere.raycast(pixelRay);
             var planeResult = plane.raycast(pixelRay);
-            var color = 0.1;
-            if (sphereResult.hit) {
-                var lightDirection = lightPosition.subtract(sphereResult.point).normalize();
-                var normalDotLight = Math.max(sphereResult.normal.dot(lightDirection), 0);
-                color = normalDotLight;
-            } 
-            if (planeResult.hit) {
-                var lightDirection = lightPosition.subtract(planeResult.point).normalize();
-                var normalDotLight = Math.max(planeResult.normal.dot(lightDirection), 0);
-                color = normalDotLight;
+            var closestHit = null;
+            var lightPosition = new Vector3(1, 0, 0);
+            var seconds = timeElapsed * 0.001;
+            lightPosition.x = Math.cos(seconds) * 0.5;
+            lightPosition.z = Math.sin(seconds) * 0.5;
+
+            for (var i = 0; i < scene.length; i++) {
+                var result = scene[i].raycast(pixelRay);
+                if (result.hit && (!closestHit || result.distance < closestHit.distance)) {
+                    closestHit = result;
+                    closestHit.object = scene[i];
+                }
             }
 
-            setPixelColor(xPixelIndex, yPixelIndex, color);
+            if (closestHit) {
+
+                if (closestHit.object instanceof Sphere) {
+                    objectColor = {r:0.5,g:0,b:0.5};
+                } else {
+                    objectColor = closestHit.object.color || { r: 1, g: 1, b: 1 };
+                }
+
+                var intersectionPoint = closestHit.point;
+                var normal = closestHit.normal;
+                var shadowRay = new Ray(intersectionPoint, lightPosition.clone().subtract(intersectionPoint).normalize());
+                var sphereShadowResult = sphere.raycast(shadowRay);
+                var inShadow = false;
+
+                for (let j = 0; j < scene.length; j++) {
+
+                    if (scene[j] === closestHit.object) continue;
+                    var shadowResult = scene[j].raycast(shadowRay);
+
+                    if (shadowResult.hit) {
+                        var shadowHitDistance = shadowResult.distance;
+                        var lightDistance = lightPosition.clone().subtract(intersectionPoint).length();
+                        var lightDirection = lightPosition.clone().subtract(intersectionPoint).normalize();
+                        if (shadowHitDistance < lightDistance && shadowHitDistance > 1e-4) {
+                            inShadow = true;
+                            break;
+                        }
+                    }
+                }
+
+            if (!inShadow) {
+                shadeOfGray = Math.max(0, closestHit.normal.dot(lightDirection));
+            } else {
+                shadeOfGray = 0;
+            }
+                setPixelColor(xPixelIndex, yPixelIndex, shadeOfGray);
+                    objectColor = {
+                    r: objectColor.r * shadeOfGray,
+                    g: objectColor.g * shadeOfGray,
+                    b: objectColor.b * shadeOfGray
+                };
+            setPixelColor(xPixelIndex, yPixelIndex, objectColor);
+            } else {
+                setPixelColor(xPixelIndex, yPixelIndex, { r: 0, g: 0, b: 0 });
+            }
         }
     }
+
     canvasContext.putImageData(imageData, 0, 0);
-  
     requestAnimationFrame(updateAndRender);
 }
-
 requestAnimationFrame(updateAndRender);
-
-
-
-
-
-
-
 </script>
 </body>
 </html>
