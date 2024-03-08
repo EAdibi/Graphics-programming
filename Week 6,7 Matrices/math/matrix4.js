@@ -204,32 +204,23 @@ var Matrix4 = function (x, y, z) {
   makePerspective: function (fovy, aspect, near, far) {
   var fovyRads = fovy * Math.PI / 180;
   var t = Math.tan(fovyRads / 2) * near;
-  var r = t * aspect;
- 
   var e = this.elements;
  
-  e[0] = near / r;
+  e[0] = near / (aspect * t);
   e[1] = 0;
   e[2] = 0;
   e[3] = 0;
- 
   e[4] = 0;
   e[5] = near / t;
   e[6] = 0;
   e[7] = 0;
- 
-  var depth = far - near;
-  var q = -(far + near) / depth;
-  var qn = -2 * (far * near) / depth;
- 
   e[8] = 0;
   e[9] = 0;
-  e[10] = q; 
+  e[10] = -(far + near) / (far - near);
   e[11] = -1;
- 
   e[12] = 0;
   e[13] = 0;
-  e[14] = qn; 
+  e[14] = -(2 * far * near) / (far - near);
   e[15] = 0;
  
   return this;
@@ -262,9 +253,9 @@ var Matrix4 = function (x, y, z) {
  
   var trsMatrix = new Matrix4();
  
-  trsMatrix.multiply(sMatrix);
-  trsMatrix.multiply(rMatrix); 
   trsMatrix.multiply(tMatrix); 
+  trsMatrix.multiply(rMatrix); 
+  trsMatrix.multiply(sMatrix);
  
   return trsMatrix;
   },
