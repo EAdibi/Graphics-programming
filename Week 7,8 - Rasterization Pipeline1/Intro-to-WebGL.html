@@ -298,8 +298,9 @@
 
 			// todo #11 - make the triangle rotate
 			triangleGeometry.worldMatrix.makeIdentity();
-			triangleGeometry.worldMatrix.makeRotationY(degrees);
+			// triangleGeometry.worldMatrix.makeRotationY(degrees);
 			triangleGeometry.worldMatrix.multiply(new Matrix4().makeTranslation(0, 0, -7));
+			triangleGeometry.worldMatrix.multiply(new Matrix4().makeRotationY(degrees));
 
 			// todo #6
 			// 1. update the triangle geometry world matrix here (used to place the triangle into world space)
