@@ -1,14 +1,18 @@
 /*
- * A simple object to encapsulate the data and operations of object rasterization
- */
+* A simple object to encapsulate the data and operations of object rasterization
+*/
 function WebGLGeometryQuad(gl) {
 	this.gl = gl;
 	this.worldMatrix = new Matrix4();
 	
+	
 	// -----------------------------------------------------------------------------
 	this.getPosition = function () {
 	// todo #9 - return a vector4 of this object's world position contained in its matrix
+	var e = this.worldMatrix.elements;
+	return new Vector4(e[12], e[13], e[14], 1);
 	}
+	
 	
 	// -----------------------------------------------------------------------------
 	this.create = function (rawImage) {
@@ -19,12 +23,14 @@ function WebGLGeometryQuad(gl) {
 	1.0, 1.0, 0.0
 	];
 	
+	
 	var normals = [
 	0.0, 0.0, 1.0,
 	0.0, 0.0, 1.0,
 	0.0, 0.0, 1.0,
 	0.0, 0.0, 1.0,
 	];
+	
 	
 	var uvs = [
 	0.0, 0.0,
@@ -33,59 +39,62 @@ function WebGLGeometryQuad(gl) {
 	1.0, 1.0
 	];
 	
+	
 	var indices = [0, 1, 2, 2, 1, 3];
 	this.indexCount = indices.length;
+	
 	
 	// create the position and color information for this object and send it to the GPU
 	this.vertexBuffer = gl.createBuffer();
 	this.gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 	this.gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 	
+	
 	this.normalBuffer = this.gl.createBuffer();
 	this.gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
 	this.gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+	
 	
 	this.texCoordsBuffer = this.gl.createBuffer();
 	this.gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordsBuffer);
 	this.gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
 	
+	
 	this.indexBuffer = this.gl.createBuffer();
 	this.gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 	this.gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+	
 	
 	if (rawImage) {
 	// todo #4 - create the texture (uncomment when ready)
 	// 1.
 	this.texture = this.gl.createTexture();
-	
 	// 2. bind the texture
-	this.gl.bindTexture(gl.TEXTURE_2D, this.texture)
-	
+	this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
 	// needed for the way browsers load images, ignore this
 	this.gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-	
 	// 3. set wrap modes (for s and t) for the texture
-	this.gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	this.gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	
+	this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+	this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
 	// 4. set filtering modes (magnification and minification)
-	this.gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-	this.gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-	
+	this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+	this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
 	// 5. send the image WebGL to use as this texture
-	this.gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, rawImage);
-	
+	this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, rawImage);
 	// We're done for now, unbind
 	this.gl.bindTexture(gl.TEXTURE_2D, null);
 	}
 	}
 	
+	
 	// -------------------------------------------------------------------------
 	this.render = function (camera, projectionMatrix, shaderProgram) {
 	this.gl.useProgram(shaderProgram);
 	
+	
 	var attributes = shaderProgram.attributes;
 	var uniforms = shaderProgram.uniforms;
+	
 	
 	this.gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 	this.gl.vertexAttribPointer(
@@ -97,6 +106,7 @@ function WebGLGeometryQuad(gl) {
 	0
 	);
 	this.gl.enableVertexAttribArray(attributes.vertexPositionAttribute);
+	
 	
 	if (attributes.hasOwnProperty('vertexNormalsAttribute')) {
 	this.gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
@@ -111,6 +121,7 @@ function WebGLGeometryQuad(gl) {
 	this.gl.enableVertexAttribArray(attributes.vertexNormalsAttribute);
 	}
 	
+	
 	if (attributes.hasOwnProperty('vertexTexcoordsAttribute')) {
 	this.gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordsBuffer);
 	this.gl.vertexAttribPointer(
@@ -124,10 +135,14 @@ function WebGLGeometryQuad(gl) {
 	this.gl.enableVertexAttribArray(attributes.vertexTexcoordsAttribute);
 	}
 	
+	
 	if (this.texture) {
 	// todo #4
-	gl.activeTexture(gl.TEXTURE0);
-	gl.bindTexture(gl.TEXTURE_2D, this.texture);
+	// uncomment when ready
+	// gl.activeTexture(?);
+	// gl.bindTexture(?, ?);
+	gl.activeTexture(this.gl.TEXTURE0);
+	gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
 	}
 	
 	
@@ -136,12 +151,15 @@ function WebGLGeometryQuad(gl) {
 	this.gl.uniformMatrix4fv(uniforms.viewMatrixUniform, false, camera.getViewMatrix().clone().transpose().elements);
 	this.gl.uniformMatrix4fv(uniforms.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
 	
+	
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 	this.gl.drawElements(this.gl.TRIANGLES, this.indexCount, gl.UNSIGNED_SHORT, 0);
+	
 	
 	this.gl.bindTexture(this.gl.TEXTURE_2D, null);
 	this.gl.disableVertexAttribArray(attributes.vertexPositionAttribute);
 	this.gl.disableVertexAttribArray(attributes.vertexNormalsAttribute);
+	
 	
 	if (attributes.hasOwnProperty('vertexTexcoordsAttribute')) {
 	this.gl.disableVertexAttribArray(attributes.vertexTexcoordsAttribute);
@@ -149,4 +167,6 @@ function WebGLGeometryQuad(gl) {
 	}
 	}
 	
+	
 	// EOF 00100001-10
+	
