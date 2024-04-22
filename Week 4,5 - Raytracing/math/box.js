@@ -1,5 +1,5 @@
 // box.js
-var Box = function(minCorner, maxCorner) {
+var Box = function(minCorner, maxCorner, color) {
     if (!(this instanceof Box)) {
         console.error("Box constructor must be called with the new operator");
     }
@@ -10,6 +10,7 @@ var Box = function(minCorner, maxCorner) {
 
     this.min = minCorner;
     this.max = maxCorner;
+    this.color = color || new Vector3(1, 1, 1);
 };
 
 Box.prototype = {
@@ -55,7 +56,8 @@ Box.prototype = {
             hit: true,
             point: hitPoint,
             normal: normal,
-            distance: tMin
+            distance: tMin,
+            color: this.color
         };
     },
 
