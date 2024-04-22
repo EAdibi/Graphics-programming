@@ -1,3 +1,4 @@
+
 // -----------------------------------------------------------------------------
 function loadTextFile(url, callback) {
 	return new Promise((resolve, reject) => {
@@ -41,5 +42,3 @@ var loadImage = function (url, callback) {
 		image.src = url;
 	});
 };
-
-// EOF 00100001-10

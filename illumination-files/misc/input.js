@@ -38,5 +38,3 @@ function Input() {
 	window.addEventListener('keydown', onKeyDown.bind(this));
     window.addEventListener('keyup', onKeyUp.bind(this));
 }
-
-// EOF 00100001-10

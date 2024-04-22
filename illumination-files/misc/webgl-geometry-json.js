@@ -1,3 +1,4 @@
+
 /*
  * A simple object to encapsulate the data and operations of object rasterization
  */
@@ -114,5 +115,3 @@ function WebGLGeometryJSON(gl) {
         attributes.vertexTexcoordsAttribute && gl.disableVertexAttribArray(attributes.vertexTexcoordsAttribute);
 	}
 }
-
-// EOF 00100001-10

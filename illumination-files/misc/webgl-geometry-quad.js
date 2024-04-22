@@ -131,5 +131,3 @@ function WebGLGeometryQuad(gl) {
         }
 	}
 }
-
-// EOF 00100001-10

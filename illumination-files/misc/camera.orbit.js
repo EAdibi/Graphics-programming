@@ -125,5 +125,3 @@ function OrbitCamera(input) {
         isDragging = false;
     }
 }
-
-// EOF 00100001-10

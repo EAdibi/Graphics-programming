@@ -1,3 +1,4 @@
+
 // -------------------------------------------------------------------------
 function createCompiledShader(gl, shaderText, shaderType) {
     var shader = gl.createShader(shaderType);
@@ -51,5 +52,3 @@ function checkFrameBufferStatus() {
             break;
     }
 }
-
-// EOF 00100001-10

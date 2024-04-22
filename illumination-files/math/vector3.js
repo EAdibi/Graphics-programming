@@ -78,5 +78,3 @@ var Vector3 = function(x, y, z) {
 		);
 	}
 };
-
-// EOF 00100001-10

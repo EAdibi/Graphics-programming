@@ -1,3 +1,4 @@
+
 precision mediump float;
 
 attribute vec3 aVertexPosition;
@@ -18,5 +19,3 @@ void main(void) {
     vWorldPosition = (uWorldMatrix * vec4(aVertexPosition, 1.0)).xyz;
     vTexcoords = aTexcoords;
 }
-
-// EOF 00100001-10

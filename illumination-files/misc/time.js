@@ -12,5 +12,4 @@ function Time() {
         this.lastTime = currentTime;
     }
 }
-
 // EOF 00100001-10
