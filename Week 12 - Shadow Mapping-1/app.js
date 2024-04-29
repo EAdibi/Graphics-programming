@@ -10,9 +10,6 @@ var lightCamera = new Camera();         // used to create the view matrix for ou
 var teapotGeometry = null;
 var groundGeometry = null;
 
-// var yaw = 0, pitch = 0;
-
-
 // the projection from our normal eye's view space to its clip space
 var projectionMatrix = new Matrix4();
 
