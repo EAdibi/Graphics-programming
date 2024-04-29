@@ -55,4 +55,9 @@ void main(void) {
     //} else {
     //    gl_FragColor = vec4(finalColor, 1.0);
     //}
+    if (lightDepth > shadowColor.r + 0.004) {  // Add a small bias to prevent shadow acne
+        gl_FragColor = vec4(ambient, 1.0);  // If in shadow, show only ambient light color
+    } else {
+        gl_FragColor = vec4(finalColor, 1.0);  // If not in shadow, show fully lit color
+    }
 }

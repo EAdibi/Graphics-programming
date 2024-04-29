@@ -10,6 +10,9 @@ var lightCamera = new Camera();         // used to create the view matrix for ou
 var teapotGeometry = null;
 var groundGeometry = null;
 
+// var yaw = 0, pitch = 0;
+
+
 // the projection from our normal eye's view space to its clip space
 var projectionMatrix = new Matrix4();
 
@@ -49,10 +52,28 @@ function initializeAndStartRendering() {
         createScene();
         createFrameBufferResources();
 
+        setupEventListeners(); 
+
         updateAndRender();
     });
 }
 
+// -------------------------------------------------------------------------
+function setupEventListeners() {
+    document.addEventListener('keyup', function(event) {
+        // Stop rotation when the keys are released
+        switch(event.key) {
+            case 'a': // Rotate left
+            case 'd': // Rotate right
+                yaw = 0;
+                break;
+            case 'w': // Rotate up
+            case 's': // Rotate down
+                pitch = 0;
+                break;
+        }
+    });
+}
 // -------------------------------------------------------------------------
 function initGL(canvas) {
     var canvas = document.getElementById("webgl-canvas");
@@ -230,6 +251,11 @@ function updateAndRender() {
     // We will set up the view volume boundaries with an orthographics projection later.
     lightCamera.cameraWorldMatrix.makeLookAt(new Vector3(5, 3, 0), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
 
+    
+      
+
+
+
     camera.update(time.deltaTime);
 
     // render scene depth to texture ################## 
@@ -276,3 +302,14 @@ function updateAndRender() {
     groundGeometry.render(camera, projectionMatrix, phongShaderProgram, renderTexture);
     teapotGeometry.render(camera, projectionMatrix, phongShaderProgram, renderTexture);
 }
+
+
+document.addEventListener('keydown', function(event) {
+    switch(event.key) {
+        case 'w': lightCamera.moveForward(0.1); break;
+        case 's': lightCamera.moveBackward(0.1); break;
+        case 'a': lightCamera.moveLeft(0.1); break;
+        case 'd': lightCamera.moveRight(0.1); break;
+    }
+    lightCamera.updateMatrix();
+});
