@@ -18,3 +18,4 @@ void main(void) {
     vWorldNormal = (uWorldMatrix * vec4(aNormal, 0.0)).xyz;
     vWorldPosition = (uWorldMatrix * vec4(aVertexPosition, 1.0)).xyz;
 }
+

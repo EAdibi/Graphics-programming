@@ -21,8 +21,8 @@ void main(void) {
     vec4 texColor = texture2D(uAlbedoTexture, vTexCoords);
 
     // todo #5 sample a color from the shadow texture using vTexCoords and visualize the result
-    vec4 shadowColor = texture2D(uShadowTexture, vTexCoords);
-    gl_FragColor = shadowColor;
+    vec4 shadowColorr = texture2D(uShadowTexture, vTexCoords);
+
 
     vec3 ambient = vec3(0.2, 0.2, 0.2) * texColor.rgb;
     vec3 diffuseColor = texColor.rgb * lambert;
@@ -32,33 +32,28 @@ void main(void) {
     // todo #6
     // transform the world position into the lights clip space (clip space and NDC will be the same for orthographic projection)
     vec4 lightSpaceNDC = uLightVPMatrix * vec4(vWorldPosition, 1.0);
-    // scale and bias the light-space NDC xy coordinates from [-1, 1] to [0, 1]
-    vec2 lightSpaceUV = lightSpaceNDC.xy * 0.5 + 0.5;
 
-    gl_FragColor = vec4(lightSpaceUV, 0.0, 1.0);
+    // scale and bias the light-space NDC xy coordinates from [-1, 1] to [0, 1]
+    vec2 lightSpaceUV = (lightSpaceNDC.xy +1.0)/2.0;
 
     // todo #7
     // Sample from the shadow map texture using the previously calculated lightSpaceUV
-    // vec4 shadowColor = texture2D...
-    vec4 depthColor = texture2D(uShadowTexture, lightSpaceUV);
-    gl_FragColor = depthColor;
+    vec4 shadowColor = texture2D(uShadowTexture, lightSpaceUV);
 
     // todo #8 scale and bias the light-space NDC z coordinate from [-1, 1] to [0, 1]
-    float lightDepth = (lightSpaceNDC.z + 1.0) * 0.5;
+    float lightDepth = (lightSpaceNDC.z +1.0) /2.0;
 
-    // Visualize the light depth
-    gl_FragColor = vec4(lightDepth, lightDepth, lightDepth, 1.0);
+    // use this as part of todo #10
+    float bias = 0.004;
+    shadowColor += bias;
 
     // todo #9
-    //if (/* in shadow*/) {
-    //   gl_FragColor = vec4(ambient, 1.0);
-    //} else {
-    //    gl_FragColor = vec4(finalColor, 1.0);
-    //}
-    //adding condition
-    if (lightDepth > shadowColor.r + 0.00004) { 
-        gl_FragColor = vec4(ambient, 1.0);  
+
+   // gl_FragColor = vec4(lightDepth, lightDepth, lightDepth, 1.0);
+    if (lightDepth > shadowColor.r) {
+       gl_FragColor = vec4(ambient, 1.0);
     } else {
-        gl_FragColor = vec4(finalColor, 1.0);  
+      gl_FragColor = vec4(finalColor, 1.0);
     }
 }
+
